@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Navigation JSON Simulator</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	<link
+		rel="stylesheet"
+		href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+		integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+		crossorigin=""
+	>
+	<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+	<div class="app-shell">
+		<header class="topbar">
+			<div class="title-card">
+				<h1>Navigation JSON Simulator</h1>
+				<p>Local static map app for creating live navigation-state JSON.</p>
+				<p><a class="title-link" href="./processor.html" target="_blank" rel="noopener noreferrer">Open processor</a></p>
+				<div id="loading-panel" class="loading-panel is-hidden" aria-live="polite" aria-hidden="true">
+					<div class="loading-panel-header">
+						<span id="loading-label">Working...</span>
+						<span id="loading-percent">0%</span>
+					</div>
+					<div class="loading-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Simulator loading progress">
+						<span id="loading-bar" class="loading-bar"></span>
+					</div>
+				</div>
+				<details class="panel-card panel-card-collapsible header-json-panel">
+					<summary class="panel-summary">
+						<span class="panel-summary-title">JSON Output</span>
+						<span class="panel-summary-indicator" aria-hidden="true"></span>
+					</summary>
+					<div class="panel-body">
+						<div class="button-row">
+							<button id="download-current-btn" class="button-primary">Download snapshot</button>
+							<button id="download-log-btn" class="button-ghost">Download log</button>
+							<button id="reset-log-btn" class="button-ghost button-danger">Reset log</button>
+						</div>
+						<pre id="json-output" class="json-output"></pre>
+					</div>
+				</details>
+			</div>
+			<div class="status-strip" aria-hidden="true">
+				<span id="connection-status">Map ready.</span>
+				<span id="sim-status">Simulation paused</span>
+			</div>
+		</header>
+
+		<main class="layout">
+			<section class="map-panel">
+				<div id="map"></div>
+			</section>
+
+			<aside class="control-panel">
+				<section class="panel-card vehicle-card">
+					<h2>Vehicle</h2>
+					<label>
+						Teleport user to address
+						<input id="user-address-input" type="text" placeholder="Example: Atocha Station, Madrid">
+					</label>
+					<div class="button-row">
+						<button id="teleport-btn" class="button-primary">Teleport to address</button>
+						<button id="center-btn" class="button-ghost" type="button" aria-pressed="false">Center on user: Off</button>
+					</div>
+					<div class="value-row">
+						<span>Current position</span>
+						<strong id="position-readout">40.416800, -3.703800</strong>
+					</div>
+					<div class="vehicle-gauges">
+						<div class="compass-block">
+							<button id="orientation-compass" class="compass" type="button" aria-label="Set user orientation with compass">
+								<span class="compass-ring"></span>
+								<span class="compass-label compass-label-n">N</span>
+								<span class="compass-label compass-label-e">E</span>
+								<span class="compass-label compass-label-s">S</span>
+								<span class="compass-label compass-label-w">W</span>
+								<span id="compass-needle" class="compass-needle"></span>
+								<span class="compass-center"></span>
+								<span id="orientation-readout" class="compass-readout">0° (N)</span>
+							</button>
+						</div>
+						<div class="speedometer-block" aria-label="Current speedometer">
+							<div class="speedometer" role="img" aria-label="Vehicle speed indicator">
+								<span class="speedometer-arc"></span>
+								<span class="speedometer-tick speedometer-tick-major speedometer-tick-0"></span>
+								<span class="speedometer-tick speedometer-tick-minor speedometer-tick-20"></span>
+								<span class="speedometer-tick speedometer-tick-major speedometer-tick-40"></span>
+								<span class="speedometer-tick speedometer-tick-minor speedometer-tick-60"></span>
+								<span class="speedometer-tick speedometer-tick-major speedometer-tick-80"></span>
+								<span class="speedometer-tick speedometer-tick-minor speedometer-tick-100"></span>
+								<span class="speedometer-tick speedometer-tick-major speedometer-tick-120"></span>
+								<span class="speedometer-tick speedometer-tick-minor speedometer-tick-140"></span>
+								<span class="speedometer-tick speedometer-tick-major speedometer-tick-160"></span>
+								<span class="speedometer-tick speedometer-tick-minor speedometer-tick-180"></span>
+								<span class="speedometer-tick speedometer-tick-major speedometer-tick-200"></span>
+								<span class="speedometer-tick speedometer-tick-minor speedometer-tick-220"></span>
+								<span class="speedometer-tick speedometer-tick-major speedometer-tick-240"></span>
+								<span class="speedometer-label speedometer-label-0">0</span>
+								<span class="speedometer-label speedometer-label-40">40</span>
+								<span class="speedometer-label speedometer-label-80">80</span>
+								<span class="speedometer-label speedometer-label-120">120</span>
+								<span class="speedometer-label speedometer-label-160">160</span>
+								<span class="speedometer-label speedometer-label-200">200</span>
+								<span class="speedometer-label speedometer-label-240">240</span>
+								<span id="speedometer-needle" class="speedometer-needle"></span>
+								<span class="speedometer-center"></span>
+								<span id="speedometer-value" class="speedometer-value">0 km/h</span>
+							</div>
+						</div>
+						<div class="speed-control-stack" aria-label="Route speed controls">
+							<button id="speed-slower-btn" class="speed-step-button button-ghost speed-icon-button" type="button" aria-label="Reduce route speed scaling" title="Reduce route speed scaling">
+								<img class="speed-button-icon" src="../assets/speed/slow.png" alt="" aria-hidden="true">
+							</button>
+							<button id="speed-reset-btn" class="speed-step-button button-ghost speed-reset-button" type="button" aria-label="Reset route speed scaling to 1x" title="Reset route speed scaling to 1x">1x</button>
+							<button id="speed-faster-btn" class="speed-step-button button-ghost speed-icon-button" type="button" aria-label="Increase route speed scaling" title="Increase route speed scaling">
+								<img class="speed-button-icon" src="../assets/speed/fast.png" alt="" aria-hidden="true">
+							</button>
+						</div>
+					</div>
+				</section>
+
+				<section class="panel-card destination-card">
+					<h2>Destination</h2>
+					<label>
+						Address
+						<input id="address-input" type="text" placeholder="Example: Puerta del Sol, Madrid">
+					</label>
+					<div class="button-row">
+						<button id="route-btn" class="button-primary">Route to address</button>
+						<button id="clear-route-btn" class="button-ghost button-danger">Clear route</button>
+					</div>
+					<div class="value-row">
+						<span>Destination</span>
+						<strong id="destination-readout">Not set</strong>
+					</div>
+					<div class="value-row">
+						<span>Distance remaining</span>
+						<strong id="distance-readout">0.00 km</strong>
+					</div>
+				</section>
+
+				<section class="panel-card time-card">
+					<h2>Simulation Time</h2>
+					<label>
+						Clock
+						<input id="time-input" type="datetime-local" step="1">
+					</label>
+					<div class="value-row">
+						<span>Exact time</span>
+						<strong id="time-readout">2026-05-10 20:39:22</strong>
+					</div>
+					<label>
+						Time scale
+						<input id="time-scale" type="range" min="1" max="60" value="10" step="1">
+					</label>
+					<div class="value-row">
+						<span>Time flow</span>
+						<strong id="time-scale-readout">10x</strong>
+					</div>
+					<label>
+						Processor JSON frequency
+						<input id="json-frequency" type="number" min="1" max="30" value="5" step="1">
+					</label>
+					<div class="value-row">
+						<span>Sent to processor</span>
+						<strong id="json-frequency-readout">5 per second</strong>
+					</div>
+					<div class="button-row simulation-controls-duo">
+						<button id="play-toggle-btn" class="icon-button button-primary icon-button-large" type="button" aria-label="Play simulation" title="Play simulation">
+							<svg id="play-toggle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+								<path d="M8 6v12l10-6z" fill="currentColor"></path>
+							</svg>
+						</button>
+					</div>
+				</section>
+			</aside>
+		</main>
+	</div>
+
+	<script
+		src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+		integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+		crossorigin=""
+	></script>
+	<script src="../js/app.js"></script>
+</body>
+</html>

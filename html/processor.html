@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Navigation Route City Finder</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="../css/processor.css">
+</head>
+<body>
+	<div class="page-shell">
+		<header class="hero-card">
+			<div>
+				<p class="eyebrow">Local static processor</p>
+				<h1>Navigation Route City Finder</h1>
+				<p class="hero-copy">This page listens to the Navigation JSON Simulator in real time and extracts nearby and ahead cities from the active route while keeping the live processed snapshot available.</p>
+			</div>
+			<div class="hero-actions">
+				<a class="link-button" href="./simulation.html" target="_blank" rel="noopener noreferrer">Open simulator</a>
+				<a class="link-button" href="./prompt-builder.html" target="_blank" rel="noopener noreferrer">Open prompt app</a>
+				<button id="reconnect-btn" class="file-button" type="button">Reconnect live stream</button>
+				<button id="reset-session-btn" class="link-button" type="button">Reset session</button>
+			</div>
+		</header>
+
+		<main class="workspace-grid">
+			<section class="panel input-panel">
+				<div class="panel-header">
+					<div>
+						<p class="panel-kicker">Input</p>
+						<h2>Live simulator stream</h2>
+					</div>
+					<p id="input-status" class="status-chip">Connecting</p>
+				</div>
+				<div class="connection-grid">
+					<article class="summary-card">
+						<p class="summary-label">Transport</p>
+						<strong id="transport-readout">Starting…</strong>
+					</article>
+					<article class="summary-card">
+						<p class="summary-label">Messages received</p>
+						<strong id="message-count-readout">0</strong>
+					</article>
+					<article class="summary-card">
+						<p class="summary-label">Last simulator timestamp</p>
+						<strong id="last-simulator-time-readout">Waiting</strong>
+					</article>
+					<article class="summary-card">
+						<p class="summary-label">Last received at</p>
+						<strong id="last-received-readout">Waiting</strong>
+					</article>
+				</div>
+				<section class="stack-card analysis-control-card">
+					<div class="stack-header">
+						<h3>Analysis frequency</h3>
+					</div>
+					<label class="field-label" for="analysis-frequency">Process one sample every</label>
+					<select id="analysis-frequency" class="select-control">
+						<option value="5000">5 seconds</option>
+						<option value="10000" selected>10 seconds</option>
+						<option value="15000">15 seconds</option>
+						<option value="30000">30 seconds</option>
+						<option value="60000">1 minute</option>
+						<option value="120000">2 minutes</option>
+						<option value="300000">5 minutes</option>
+						<option value="600000">10 minutes</option>
+						<option value="900000">15 minutes</option>
+						<option value="1800000">30 minutes</option>
+						<option value="3600000">1 hour</option>
+					</select>
+					<div class="analysis-progress-card" aria-live="polite">
+						<div class="analysis-progress-labels">
+							<span id="analysis-since-readout">Since last analysis: Waiting</span>
+							<span id="analysis-next-readout">Next analysis: Ready on next sample</span>
+						</div>
+						<div class="analysis-progress-track" role="progressbar" aria-label="Analysis interval progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+							<span id="analysis-progress-bar" class="analysis-progress-bar"></span>
+						</div>
+					</div>
+				</section>
+				<div class="tips-card">
+					<h3>Real-time skeleton status</h3>
+					<ul>
+						<li>The simulator publishes the current snapshot continuously while state changes.</li>
+						<li>This processor subscribes to the live stream and keeps the latest payload available.</li>
+						<li>The processor samples incoming JSONs by simulator timestamp and ignores the rest between analysis windows.</li>
+					</ul>
+				</div>
+				<section class="stack-card raw-stream-card">
+					<div class="stack-header">
+						<h3>Latest raw snapshot</h3>
+					</div>
+					<pre id="raw-json" class="json-output">{
+  "status": "waiting-for-live-snapshot"
+}</pre>
+				</section>
+			</section>
+
+			<section class="panel output-panel">
+				<div class="panel-header">
+					<div>
+						<p class="panel-kicker">Output</p>
+						<h2>Processed output</h2>
+					</div>
+					<p id="result-status" class="status-chip muted">No result yet</p>
+				</div>
+
+				<div id="summary-grid" class="summary-grid">
+					<article class="summary-card placeholder-card">
+						<p class="summary-label">Processed samples</p>
+						<strong>0</strong>
+					</article>
+					<article class="summary-card placeholder-card">
+						<p class="summary-label">Distance analyzed</p>
+						<strong>0.00 km</strong>
+					</article>
+					<article class="summary-card placeholder-card">
+						<p class="summary-label">Warnings</p>
+						<strong>0</strong>
+					</article>
+					<article class="summary-card placeholder-card">
+						<p class="summary-label">Input type</p>
+						<strong>Unknown</strong>
+					</article>
+				</div>
+
+				<div class="output-stack">
+					<section class="stack-card">
+						<div class="stack-header">
+							<h3>Processed Output</h3>
+							<button id="copy-processed-json-btn" class="link-button panel-action-button" type="button">Copy output</button>
+						</div>
+						<pre id="processed-json" class="json-output">{}</pre>
+					</section>
+				</div>
+			</section>
+		</main>
+	</div>
+
+	<script src="../js/processor.js"></script>
+</body>
+</html>

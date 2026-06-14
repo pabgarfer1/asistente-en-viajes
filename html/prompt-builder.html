@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Route Events Prompt Builder</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="../css/prompt-builder.css">
+</head>
+<body>
+	<div class="page-shell">
+		<main class="device-stage">
+			<div class="external-topbar">
+				<nav class="external-links" aria-label="Navigation links">
+					<a class="hero-link" href="./simulation.html" target="_blank" rel="noopener noreferrer">Open navigation simulator</a>
+					<a class="hero-link" href="./processor.html" target="_blank" rel="noopener noreferrer">Open city finder</a>
+				</nav>
+				<section id="feed-card" class="status-card external-status-card">
+					<p class="status-label">Live route feed</p>
+					<strong id="feed-status">Waiting for processed output</strong>
+					<p id="feed-time" class="status-meta">Current route time: waiting</p>
+				</section>
+			</div>
+
+			<section class="phone-shell" aria-label="Prompt builder app">
+				<div class="phone-frame">
+					<div class="phone-notch" aria-hidden="true"></div>
+					<div class="phone-screen">
+						<header class="app-header">
+							<div>
+								<p class="app-kicker">Travel assistant</p>
+							</div>
+							<div class="app-actions">
+								<button id="copy-prompt-btn" class="copy-button is-hidden" type="button" hidden aria-hidden="true">Copy prompt</button>
+							</div>
+						</header>
+
+						<div class="tab-panels">
+							<section id="tab-categories" class="tab-panel selector-card is-active" data-tab-panel="categories">
+								<div class="section-heading">
+									<h3>Choose interests</h3>
+									<p>Select the categories you care about for the cities ahead.</p>
+								</div>
+								<div id="interest-grid" class="interest-grid" aria-label="Interest categories"></div>
+							</section>
+
+							<section id="tab-prompt" class="tab-panel prompt-card" data-tab-panel="prompt">
+								<pre id="prompt-output" class="prompt-output">Waiting for route city data.</pre>
+							</section>
+
+							<section id="tab-result" class="tab-panel result-card" data-tab-panel="result">
+								<div class="result-empty-state" aria-live="polite">
+									<p class="result-empty-kicker">No live results</p>
+									<h3>Paid event-search API not connected</h3>
+									<p>This phone demo is an academic exercise rather than a commercial product, so no paid API has been added for automatic result fetching.</p>
+									<p>The Result tab stays intentionally blank until you connect your own provider.</p>
+								</div>
+							</section>
+						</div>
+
+						<nav class="bottom-nav" aria-label="Phone menus">
+							<button class="bottom-nav-button is-active" type="button" data-tab-target="categories" aria-pressed="true">
+								<span class="bottom-nav-icon" aria-hidden="true">🧭</span>
+								<span class="bottom-nav-label">Interests</span>
+							</button>
+							<button class="bottom-nav-button" type="button" data-tab-target="prompt" aria-pressed="false">
+								<span class="bottom-nav-icon" aria-hidden="true">📝</span>
+								<span class="bottom-nav-label">Prompt</span>
+							</button>
+							<button class="bottom-nav-button" type="button" data-tab-target="result" aria-pressed="false">
+								<span class="bottom-nav-icon" aria-hidden="true">📥</span>
+								<span class="bottom-nav-label">Result</span>
+							</button>
+						</nav>
+					</div>
+				</div>
+			</section>
+		</main>
+	</div>
+
+	<script src="../js/prompt-builder.js"></script>
+</body>
+</html>
