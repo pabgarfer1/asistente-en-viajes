@@ -9,67 +9,6 @@
 	const DEFAULT_ANALYSIS_INTERVAL_MS = 10000;
 	const DEFAULT_ROUTE_SPEED_KMH = 88;
 	const REVERSE_LOOKUP_TIMEOUT_MS = 2500;
-	const LOCAL_CITY_CAPTURE_RADIUS_KM = 35;
-	const LOCAL_ROUTE_CITY_MATCH_RADIUS_KM = 22;
-	const LOCAL_CITY_CATALOG = [
-		{ name: "Madrid", latitude: 40.4168, longitude: -3.7038 },
-		{ name: "Getafe", latitude: 40.3083, longitude: -3.7327 },
-		{ name: "Leganes", latitude: 40.3270, longitude: -3.7635 },
-		{ name: "Mostoles", latitude: 40.3223, longitude: -3.8649 },
-		{ name: "Alcala de Henares", latitude: 40.4810, longitude: -3.3640 },
-		{ name: "Guadalajara", latitude: 40.6333, longitude: -3.1667 },
-		{ name: "Toledo", latitude: 39.8628, longitude: -4.0273 },
-		{ name: "Talavera de la Reina", latitude: 39.9606, longitude: -4.8306 },
-		{ name: "Ciudad Real", latitude: 38.9848, longitude: -3.9274 },
-		{ name: "Puertollano", latitude: 38.6860, longitude: -4.1121 },
-		{ name: "Cuenca", latitude: 40.0704, longitude: -2.1374 },
-		{ name: "Albacete", latitude: 38.9942, longitude: -1.8585 },
-		{ name: "Salamanca", latitude: 40.9701, longitude: -5.6635 },
-		{ name: "Avila", latitude: 40.6566, longitude: -4.6812 },
-		{ name: "Segovia", latitude: 40.9429, longitude: -4.1088 },
-		{ name: "Valladolid", latitude: 41.6523, longitude: -4.7245 },
-		{ name: "Zamora", latitude: 41.5033, longitude: -5.7446 },
-		{ name: "Leon", latitude: 42.5987, longitude: -5.5671 },
-		{ name: "Caceres", latitude: 39.4762, longitude: -6.3722 },
-		{ name: "Trujillo", latitude: 39.4606, longitude: -5.8817 },
-		{ name: "Merida", latitude: 38.9175, longitude: -6.3444 },
-		{ name: "Badajoz", latitude: 38.8794, longitude: -6.9707 },
-		{ name: "Zafra", latitude: 38.4250, longitude: -6.4167 },
-		{ name: "Huelva", latitude: 37.2614, longitude: -6.9447 },
-		{ name: "Seville", latitude: 37.3891, longitude: -5.9845 },
-		{ name: "Dos Hermanas", latitude: 37.2829, longitude: -5.9209 },
-		{ name: "Cordoba", latitude: 37.8882, longitude: -4.7794 },
-		{ name: "Jaen", latitude: 37.7796, longitude: -3.7849 },
-		{ name: "Granada", latitude: 37.1773, longitude: -3.5986 },
-		{ name: "Malaga", latitude: 36.7213, longitude: -4.4214 },
-		{ name: "Cadiz", latitude: 36.5271, longitude: -6.2886 },
-		{ name: "Jerez de la Frontera", latitude: 36.6850, longitude: -6.1261 },
-		{ name: "Algeciras", latitude: 36.1408, longitude: -5.4562 },
-		{ name: "Valencia", latitude: 39.4699, longitude: -0.3763 },
-		{ name: "Castellon de la Plana", latitude: 39.9864, longitude: -0.0513 },
-		{ name: "Alicante", latitude: 38.3452, longitude: -0.4810 },
-		{ name: "Murcia", latitude: 37.9922, longitude: -1.1307 },
-		{ name: "Zaragoza", latitude: 41.6488, longitude: -0.8891 },
-		{ name: "Barcelona", latitude: 41.3874, longitude: 2.1686 },
-		{ name: "Tarragona", latitude: 41.1189, longitude: 1.2445 },
-		{ name: "Girona", latitude: 41.9794, longitude: 2.8214 },
-		{ name: "Bilbao", latitude: 43.2630, longitude: -2.9350 },
-		{ name: "San Sebastian", latitude: 43.3183, longitude: -1.9812 },
-		{ name: "Vitoria-Gasteiz", latitude: 42.8467, longitude: -2.6716 },
-		{ name: "Santander", latitude: 43.4623, longitude: -3.8099 },
-		{ name: "Pamplona", latitude: 42.8125, longitude: -1.6458 },
-		{ name: "Logrono", latitude: 42.4627, longitude: -2.4449 },
-		{ name: "Soria", latitude: 41.7660, longitude: -2.4790 },
-		{ name: "Teruel", latitude: 40.3441, longitude: -1.1069 },
-		{ name: "A Coruna", latitude: 43.3623, longitude: -8.4115 },
-		{ name: "Santiago de Compostela", latitude: 42.8782, longitude: -8.5448 },
-		{ name: "Lugo", latitude: 43.0097, longitude: -7.5568 },
-		{ name: "Ourense", latitude: 42.3358, longitude: -7.8639 },
-		{ name: "Vigo", latitude: 42.2406, longitude: -8.7207 },
-		{ name: "Pontevedra", latitude: 42.4310, longitude: -8.6444 },
-		{ name: "Oviedo", latitude: 43.3619, longitude: -5.8494 },
-		{ name: "Gijon", latitude: 43.5322, longitude: -5.6611 }
-	];
 
 	const ui = {
 		reconnectBtn: document.getElementById("reconnect-btn"),
@@ -414,78 +353,6 @@
 
 	function createLookupCacheKey(position) {
 		return roundCoordinate(position.latitude, 3) + "," + roundCoordinate(position.longitude, 3);
-	}
-
-	function distanceKmToCatalogCity(position, city) {
-		return distanceKm(position, {
-			latitude: city.latitude,
-			longitude: city.longitude
-		});
-	}
-
-	function findNearestLocalCity(position, excludedNames) {
-		const blockedNames = excludedNames || new Set();
-		const candidates = LOCAL_CITY_CATALOG
-			.filter(function (city) {
-				return !blockedNames.has(city.name);
-			})
-			.map(function (city) {
-				return {
-					name: city.name,
-					distanceKm: distanceKmToCatalogCity(position, city)
-				};
-			})
-			.filter(function (entry) {
-				return entry.distanceKm <= LOCAL_CITY_CAPTURE_RADIUS_KM;
-			})
-			.sort(function (left, right) {
-				return left.distanceKm - right.distanceKm;
-			});
-
-		return candidates[0] || null;
-	}
-
-	function buildLocalRouteCityEntries(routeCheckpoints, excludedNames) {
-		const blockedNames = excludedNames || new Set();
-		const matches = LOCAL_CITY_CATALOG.map(function (city) {
-			if (blockedNames.has(city.name)) {
-				return null;
-			}
-
-			let bestMatch = null;
-			routeCheckpoints.forEach(function (checkpoint) {
-				if (!checkpoint || checkpoint.isDestination || !checkpoint.position) {
-					return;
-				}
-
-				const checkpointDistanceKm = distanceKm({
-					latitude: checkpoint.position.latitude,
-					longitude: checkpoint.position.longitude
-				}, {
-					latitude: city.latitude,
-					longitude: city.longitude
-				});
-
-				if (!bestMatch || checkpointDistanceKm < bestMatch.checkpointDistanceKm) {
-					bestMatch = {
-						cityName: city.name,
-						checkpoint: checkpoint,
-						checkpointDistanceKm: checkpointDistanceKm
-					};
-				}
-			});
-
-			if (!bestMatch || bestMatch.checkpointDistanceKm > LOCAL_ROUTE_CITY_MATCH_RADIUS_KM) {
-				return null;
-			}
-
-			return buildSnapshotCheckpointEta(bestMatch.checkpoint, bestMatch.cityName);
-		}).filter(Boolean);
-
-		return uniqueCityEntries(matches)
-			.sort(function (left, right) {
-				return left.distanceKm - right.distanceKm;
-			});
 	}
 
 	function getCityLabel(address) {
@@ -934,104 +801,80 @@
 		let closestCity = null;
 		let destinationCity = destination ? getCityLabelFromAddressText(destination.address) : null;
 		const destinationCityName = destinationCity ? String(destinationCity).trim() : null;
-		const excludedNames = new Set(destinationCityName ? [destinationCityName] : []);
 		const closestCityEntries = [];
 		const aheadCityEntries = [];
 		let lookupMode = routeLoaded ? "route-corridor-reverse-geocode" : "current-position-reverse-geocode";
-		const localCurrentCity = findNearestLocalCity(currentPosition, excludedNames);
-		const localRouteCityEntries = routeLoaded && routeCheckpoints && routeCheckpoints.length
-			? buildLocalRouteCityEntries(routeCheckpoints, excludedNames)
-			: [];
-
-		if (localCurrentCity) {
-			closestCityEntries.push(buildEtaEstimate(localCurrentCity.name, localCurrentCity.distanceKm, snapshotTimestampMs, speedModel));
-			lookupMode = "local-city-catalog";
+		try {
+			closestCity = await reverseGeocodeCity(currentPosition);
+		} catch (error) {
+			closestCity = null;
+			if (error && error.code) {
+				lookupMode = error.code;
+			}
 		}
 
-		localRouteCityEntries.forEach(function (entry) {
-			if (entry.distanceKm <= 60) {
-				closestCityEntries.push(entry);
-			}
+		if (closestCity) {
+			closestCityEntries.push(buildEtaEstimate(closestCity, 0, snapshotTimestampMs, speedModel));
+		}
 
-			if (entry.distanceKm >= 15) {
-				aheadCityEntries.push(entry);
-			}
-		});
+		if (routeLoaded && routeCheckpoints && routeCheckpoints.length) {
+			for (const checkpoint of routeCheckpoints) {
+				try {
+					const checkpointCity = checkpoint.isDestination
+						? destinationCity
+						: await reverseGeocodeCity(checkpoint.position);
+					const entry = buildSnapshotCheckpointEta(checkpoint, checkpointCity);
 
-		const hasLocalCityMatches = closestCityEntries.length > 0 || aheadCityEntries.length > 0;
-
-		if (!hasLocalCityMatches) {
-			try {
-				closestCity = await reverseGeocodeCity(currentPosition);
-			} catch (error) {
-				closestCity = null;
-				if (error && error.code) {
-					lookupMode = error.code;
-				}
-			}
-
-			if (closestCity) {
-				closestCityEntries.push(buildEtaEstimate(closestCity, 0, snapshotTimestampMs, speedModel));
-			}
-
-			if (routeLoaded && routeCheckpoints && routeCheckpoints.length) {
-				for (const checkpoint of routeCheckpoints) {
-					try {
-						const checkpointCity = checkpoint.isDestination
-							? destinationCity
-							: await reverseGeocodeCity(checkpoint.position);
-						const entry = buildSnapshotCheckpointEta(checkpoint, checkpointCity);
-
-						if (!entry) {
-							continue;
-						}
-
-						if (destinationCityName && entry.name === destinationCityName) {
-							continue;
-						}
-
-						if (entry.distanceKm <= 60) {
-							closestCityEntries.push(entry);
-						}
-
-						if (entry.distanceKm >= 15) {
-							aheadCityEntries.push(entry);
-						}
-					} catch (error) {
-						if (error && error.code && (lookupMode === "route-corridor-reverse-geocode" || lookupMode === "current-position-reverse-geocode")) {
-							lookupMode = error.code;
-						}
+					if (!entry) {
 						continue;
 					}
-				}
-			} else if (routeLoaded && remainingDistanceKm > 12) {
-				const bearing = bearingDegrees(currentPosition, destinationPosition);
-				const probeDistances = getAheadProbeDistances(remainingDistanceKm);
-				for (const probeDistanceKm of probeDistances) {
-					try {
-						const probeCity = await reverseGeocodeCity(projectCoordinate(currentPosition, bearing, probeDistanceKm));
-						const entry = probeCity ? buildEtaEstimate(probeCity, probeDistanceKm, snapshotTimestampMs, speedModel) : null;
-						if (!entry) {
-							continue;
-						}
 
-						if (destinationCityName && entry.name === destinationCityName) {
-							continue;
-						}
-
-						if (entry.distanceKm <= 60) {
-							closestCityEntries.push(entry);
-						}
-
-						if (entry.distanceKm >= 15) {
-							aheadCityEntries.push(entry);
-						}
-					} catch (error) {
-						if (error && error.code && (lookupMode === "route-corridor-reverse-geocode" || lookupMode === "current-position-reverse-geocode")) {
-							lookupMode = error.code;
-						}
+					if (destinationCityName && entry.name === destinationCityName) {
 						continue;
 					}
+
+					if (entry.distanceKm <= 60) {
+						closestCityEntries.push(entry);
+					}
+
+					if (entry.distanceKm >= 15) {
+						aheadCityEntries.push(entry);
+					}
+				} catch (error) {
+					if (error && error.code && (lookupMode === "route-corridor-reverse-geocode" || lookupMode === "current-position-reverse-geocode")) {
+						lookupMode = error.code;
+					}
+					continue;
+				}
+			}
+		} else if (routeLoaded && remainingDistanceKm > 12) {
+			const bearing = bearingDegrees(currentPosition, destinationPosition);
+			const probeDistances = getAheadProbeDistances(remainingDistanceKm);
+			for (const probeDistanceKm of probeDistances) {
+				try {
+					const probeCity = await reverseGeocodeCity(projectCoordinate(currentPosition, bearing, probeDistanceKm));
+					const entry = probeCity ? buildEtaEstimate(probeCity, probeDistanceKm, snapshotTimestampMs, speedModel) : null;
+
+					if (!entry) {
+						continue;
+					}
+
+					if (destinationCityName && entry.name === destinationCityName) {
+						continue;
+					}
+
+					if (entry.distanceKm <= 60) {
+						closestCityEntries.push(entry);
+					}
+
+					if (entry.distanceKm >= 15) {
+						aheadCityEntries.push(entry);
+					}
+				} catch (error) {
+					if (error && error.code && (lookupMode === "route-corridor-reverse-geocode" || lookupMode === "current-position-reverse-geocode")) {
+						lookupMode = error.code;
+					}
+					continue;
 				}
 			}
 		}
